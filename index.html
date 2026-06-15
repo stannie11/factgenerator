@@ -1,368 +1,302 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>YouTube Shorts Script Maker</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #0f0f1a;
-      color: #f0f0f0;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 40px 20px;
-    }
-    h1 {
-      font-size: 2rem;
-      background: linear-gradient(135deg, #ff6b35, #f7c948, #4ecdc4);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 8px;
-      text-align: center;
-    }
-    .subtitle { color: #888; margin-bottom: 36px; font-size: 0.95rem; text-align: center; }
-
-    .card {
-      background: #1a1a2e;
-      border: 1px solid #2a2a4a;
-      border-radius: 16px;
-      padding: 32px;
-      width: 100%;
-      max-width: 700px;
-      margin-bottom: 24px;
-    }
-    label {
-      display: block;
-      font-size: 0.78rem;
-      color: #aaa;
-      margin-bottom: 8px;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-    }
-    textarea {
-      width: 100%;
-      background: #0f0f1a;
-      border: 1px solid #333;
-      border-radius: 10px;
-      color: #f0f0f0;
-      font-size: 1rem;
-      padding: 14px 16px;
-      resize: vertical;
-      outline: none;
-      transition: border-color 0.2s;
-      font-family: inherit;
-      min-height: 72px;
-    }
-    textarea:focus { border-color: #ff6b35; }
-    .field { margin-top: 22px; }
-
-    /* Layout grid */
-    .layout-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-top: 8px;
-    }
-    .layout-btn {
-      background: #0f0f1a;
-      border: 2px solid #2a2a4a;
-      border-radius: 12px;
-      padding: 14px 8px 11px;
-      cursor: pointer;
-      text-align: center;
-      transition: border-color 0.15s, background 0.15s;
-      user-select: none;
-    }
-    .layout-btn:hover { border-color: #ff6b35; background: #1a1020; }
-    .layout-btn.selected { border-color: #ff6b35; background: #1f1020; box-shadow: 0 0 0 1px #ff6b3544; }
-
-    .lp {
-      width: 44px; height: 62px;
-      margin: 0 auto 9px;
-      border-radius: 5px;
-      overflow: hidden;
-      border: 1px solid #444;
-      display: flex;
-    }
-    .b { background: #ff6b35; }
-    .a { background: #4ecdc4; }
-
-    .layout-label { font-size: 0.78rem; font-weight: 700; color: #f0f0f0; margin-bottom: 2px; }
-    .layout-desc  { font-size: 0.67rem; color: #666; line-height: 1.3; }
-
-    .generate-btn {
-      margin-top: 26px;
-      width: 100%;
-      padding: 16px;
-      background: linear-gradient(135deg, #ff6b35, #f7c948);
-      border: none;
-      border-radius: 12px;
-      color: #0f0f1a;
-      font-size: 1.1rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: opacity 0.2s, transform 0.1s;
-    }
-    .generate-btn:hover { opacity: 0.9; transform: translateY(-1px); }
-
-    /* Output */
-    .output-card {
-      background: #1a1a2e;
-      border: 1px solid #2a2a4a;
-      border-radius: 16px;
-      padding: 28px;
-      width: 100%;
-      max-width: 700px;
-      display: none;
-    }
-    .output-card.visible { display: block; }
-    .out-label {
-      font-size: 0.75rem;
-      color: #ff6b35;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: 14px;
-      font-weight: 700;
-    }
-    .prompt-box {
-      background: #0f0f1a;
-      border: 1px solid #2a2a4a;
-      border-radius: 10px;
-      padding: 18px;
-      font-size: 0.92rem;
-      line-height: 1.75;
-      color: #ddd;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-    .copy-btn {
-      margin-top: 14px;
-      width: 100%;
-      padding: 13px;
-      background: linear-gradient(135deg, #ff6b35, #f7c948);
-      border: none;
-      border-radius: 10px;
-      color: #0f0f1a;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: opacity 0.2s;
-    }
-    .copy-btn:hover { opacity: 0.9; }
-    .copy-btn.copied { background: #1a4a1a; color: #4ecdc4; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flow Prompt Generator</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0a0a0a; color: #f0f0f0; font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; padding: 24px 16px; }
+  h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 4px; }
+  .sub { color: #666; font-size: 0.85rem; margin-bottom: 20px; }
+  .btn-row { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+  button { background: #ff6b35; color: #fff; border: none; border-radius: 10px; padding: 13px 22px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: background 0.15s, transform 0.1s; }
+  button:active { transform: scale(0.97); }
+  button:hover { background: #e85e2a; }
+  button.sec { background: #1e1e1e; border: 1px solid #333; color: #ccc; }
+  button.sec:hover { background: #2a2a2a; }
+  button.grn { background: #1a6b1a; }
+  button.grn:hover { background: #1e831e; }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .card { background: #141414; border: 1px solid #222; border-radius: 14px; padding: 18px; margin-bottom: 14px; }
+  .card-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #ff6b35; margin-bottom: 8px; }
+  .fact-text { font-size: 1.05rem; line-height: 1.5; color: #f0f0f0; }
+  .anim-text { font-size: 0.88rem; line-height: 1.5; color: #aaa; font-style: italic; }
+  .prompt-box { background: #0d0d0d; border: 1px solid #2a2a2a; border-radius: 10px; padding: 14px; font-size: 0.82rem; line-height: 1.6; color: #bbb; white-space: pre-wrap; word-break: break-word; max-height: 280px; overflow-y: auto; }
+  .status-bar { background: #111; border: 1px solid #222; border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+  .status-count { font-size: 0.9rem; color: #ccc; }
+  .status-count span { color: #ff6b35; font-weight: 700; }
+  .progress-bar { width: 100%; height: 4px; background: #222; border-radius: 2px; margin-top: 8px; }
+  .progress-fill { height: 4px; background: #ff6b35; border-radius: 2px; transition: width 0.3s; }
+  .loading { display: flex; align-items: center; gap: 10px; color: #666; font-size: 0.9rem; padding: 16px 0; }
+  .dot { width: 8px; height: 8px; background: #ff6b35; border-radius: 50%; animation: pulse 1.2s infinite; }
+  .dot:nth-child(2) { animation-delay: 0.2s; }
+  .dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes pulse { 0%,100%{opacity:.2;transform:scale(.8)}50%{opacity:1;transform:scale(1)} }
+  .copy-btn { background: #1e1e1e; border: 1px solid #333; color: #ccc; padding: 9px 16px; font-size: 0.82rem; border-radius: 8px; margin-top: 10px; width: 100%; }
+  .copy-btn.copied { background: #1a3a1a; border-color: #2d6a2d; color: #6abf6a; }
+  .build-log { background: #0a0a0a; border: 1px solid #1e1e1e; border-radius: 8px; padding: 12px; font-size: 0.75rem; color: #555; max-height: 120px; overflow-y: auto; font-family: monospace; margin-top: 10px; }
+  .log-line { margin-bottom: 2px; }
+  .log-line.ok { color: #2d6a2d; }
+  .log-line.err { color: #6a2d2d; }
+  .history { margin-top: 28px; border-top: 1px solid #1e1e1e; padding-top: 20px; }
+  .history-title { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #444; margin-bottom: 12px; }
+  .history-item { background: #111; border: 1px solid #1e1e1e; border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; cursor: pointer; transition: border-color 0.15s; }
+  .history-item:hover { border-color: #333; }
+  .history-fact { font-size: 0.88rem; color: #ccc; line-height: 1.4; }
+  .history-meta { font-size: 0.72rem; color: #444; margin-top: 4px; }
+  .section-title { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #444; margin-bottom: 10px; margin-top: 20px; }
+</style>
 </head>
 <body>
 
-<h1>YouTube Shorts Script Maker</h1>
-<p class="subtitle">Één prompt · Google Flow · Pixar stijl</p>
+<h1>🎬 Flow Prompt Generator</h1>
+<p class="sub">Onbeperkte unieke dierenfeitjes — bouw je eigen database op</p>
 
-<div class="card">
-
-  <label>Het feitje</label>
-  <textarea id="fact" placeholder="Bijv: Cows can walk up a flight of stairs, but they cannot walk back down because their knees do not bend in that direction"></textarea>
-
-  <div class="field">
-    <label>De animatie (bedenk zelf een leuk onrealistisch filmpje)</label>
-    <textarea id="anim" placeholder="Bijv: a cartoon cow in a graduation cap confidently strutting up stairs, then freezing at the top with a panicked face realising it can't come back down"></textarea>
+<div class="status-bar">
+  <div>
+    <div class="status-count">Database: <span id="dbCount">0</span> feitjes beschikbaar · <span id="usedCount">0</span> gebruikt</div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
   </div>
-
-  <div class="field">
-    <label>Lay-out</label>
-    <div class="layout-grid">
-
-      <div class="layout-btn selected" data-value="splitH" onclick="sel(this)">
-        <div class="lp" style="flex-direction:column">
-          <div class="b" style="flex:1"></div>
-          <div class="a" style="flex:1"></div>
-        </div>
-        <div class="layout-label">Boven / Onder</div>
-        <div class="layout-desc">Mannetje boven, clip onder</div>
-      </div>
-
-      <div class="layout-btn" data-value="splitV" onclick="sel(this)">
-        <div class="lp" style="flex-direction:row">
-          <div class="b" style="flex:1"></div>
-          <div class="a" style="flex:1"></div>
-        </div>
-        <div class="layout-label">Links / Rechts</div>
-        <div class="layout-desc">Mannetje links, clip rechts</div>
-      </div>
-
-      <div class="layout-btn" data-value="bigboy" onclick="sel(this)">
-        <div class="lp" style="flex-direction:column">
-          <div class="b" style="flex:3"></div>
-          <div class="a" style="flex:1; border-top:1px solid #555"></div>
-        </div>
-        <div class="layout-label">Groot / Smal</div>
-        <div class="layout-desc">Groot mannetje, smalle strip clip</div>
-      </div>
-
-      <div class="layout-btn" data-value="pip" onclick="sel(this)">
-        <div class="lp" style="background:#ff6b35;position:relative;">
-          <div style="position:absolute;bottom:5px;right:5px;width:40%;height:36%;background:#4ecdc4;border-radius:3px;border:1px solid #fff3"></div>
-        </div>
-        <div class="layout-label">Picture-in-Picture</div>
-        <div class="layout-desc">Clip als inset rechtsonder</div>
-      </div>
-
-      <div class="layout-btn" data-value="thought" onclick="sel(this)">
-        <div class="lp" style="background:#ff6b35;position:relative;">
-          <div style="position:absolute;top:7px;right:6px;width:40%;height:36%;background:#4ecdc4;border-radius:50%;border:2px solid #fff3"></div>
-        </div>
-        <div class="layout-label">Gedachtenwolk</div>
-        <div class="layout-desc">Clip in bubble boven hem</div>
-      </div>
-
-      <div class="layout-btn" data-value="overlay" onclick="sel(this)">
-        <div class="lp" style="background:#ff6b35;position:relative;">
-          <div style="position:absolute;bottom:0;left:0;right:0;height:36%;background:rgba(78,205,196,0.65);border-radius:0 0 3px 3px"></div>
-        </div>
-        <div class="layout-label">Overlay Strip</div>
-        <div class="layout-desc">Clip als brede strip onderin</div>
-      </div>
-
-    </div>
-  </div>
-
-  <button class="generate-btn" onclick="generate()">Genereer Prompt</button>
+  <button class="grn" onclick="buildDatabase()" id="buildBtn">+ Voeg 50 feitjes toe</button>
 </div>
 
-<div class="output-card" id="out">
-  <div class="out-label">Google Flow Prompt</div>
-  <div class="prompt-box" id="promptBox"></div>
-  <button class="copy-btn" id="copyBtn" onclick="copyIt()">Kopieer naar klembord</button>
+<div id="buildSection" style="display:none">
+  <div class="loading" id="buildLoading"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span id="buildStatus">Feitjes genereren...</span></div>
+  <div class="build-log" id="buildLog"></div>
 </div>
+
+<div class="btn-row">
+  <button onclick="generate(1)" id="genBtn">✨ Genereer feitje</button>
+  <button class="sec" onclick="generate(2)" id="gen2Btn">✨✨ Genereer 2 feitjes</button>
+</div>
+
+<div id="loading" style="display:none"><div class="loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span>Prompt aan het maken...</span></div></div>
+<div id="results"></div>
+<div id="history" style="display:none" class="history"><div class="history-title">Eerder gegenereerd</div><div id="historyList"></div></div>
 
 <script>
-  const BOY = `a charismatic 26-year-old animated boy with messy brown hair, big green eyes, light freckles, and a vibrant orange hoodie`;
+// === DATABASE ===
+let db = JSON.parse(localStorage.getItem('factdb') || '[]');
+let usedIds = JSON.parse(sessionStorage.getItem('usedIds') || '[]');
+let sessionHistory = [];
+let isBuilding = false;
 
-  let layout = "splitH";
-  function sel(el) {
-    document.querySelectorAll(".layout-btn").forEach(b => b.classList.remove("selected"));
-    el.classList.add("selected");
-    layout = el.dataset.value;
-  }
+const VOICEOVER_STYLES = [
+  f => `a deadpan narrator drops the fact cold and flat, letting visuals do the work: "${f}." — said once`,
+  f => `a warm curious narrator speaks with genuine wonder, as if discovering it live: "${f}." — one take`,
+  f => `an urgent whispering narrator delivers it like a secret: "${f}." — hushed and intense`,
+  f => `a deep cinematic nature-documentary narrator, slow and deliberate: "${f}." — powerful, once`,
+  f => `a bright playful narrator pops it like a punchline: "${f}!" — quick and punchy`,
+  f => `a breathless narrator rushes in mid-thought: "Wait — ${f}?!" — one exclamation`,
+  f => `a calm BBC-documentary narrator with quiet authority: "${f}." — confident certainty`,
+  f => `a high-energy sports commentator shouts it: "${f}!!" — explosive, once, done`,
+];
+const CAMERA_OPENS = [
+  `Opens on extreme macro close-up — barely recognisable — then instantly pulls back to reveal the subject.`,
+  `Opens mid-action, cutting straight into the most dynamic moment with no buildup.`,
+  `Opens with a dramatic low-angle shot looking up, giving the subject enormous scale.`,
+  `Opens with a fast whip-pan swinging into the subject from the side, full speed.`,
+  `Opens with a crash-zoom punch directly into the subject's face or key detail.`,
+  `Opens from the subject's POV — we see what it sees — then instantly cuts to wide shot.`,
+  `Opens in slow-motion close-up of the most striking detail, then snaps to normal speed.`,
+  `Opens with a bird's-eye overhead shot, then dramatically tilts to face-level.`,
+];
+const BACKGROUNDS = [
+  "a lush jungle clearing with soft dappled sunlight filtering through the canopy",
+  "a dramatic savanna at golden hour with long shadows stretching across the grass",
+  "a vibrant coral reef teeming with colorful fish and swaying anemones",
+  "a snowy arctic landscape with pale blue light and distant icebergs",
+  "a dense rainforest with misty waterfalls cascading in the background",
+  "a sun-baked desert with rippling heat haze and distant dunes",
+  "a moonlit ocean surface with bioluminescent waves glowing below",
+  "a vibrant underwater kelp forest with shafts of light cutting through",
+  "a misty mountain valley with ancient trees and roaring waterfalls",
+  "a vivid tidal pool teeming with starfish, crabs, and darting fish",
+];
 
-  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
-  function factKeywords(fact) {
-    // Strip common filler words and return the most impactful words in caps
-    const stop = new Set(["a","an","the","and","or","but","in","on","at","to","of","for","is","are","was","were","it","its","that","this","they","can","cannot","not","do","does","with","from","by","as","be","been","have","has","their","which","who","how","what","when","because","so","than","more","most","only","also","just","up","down","into","out","about","after","before","very","all","both"]);
-    const words = fact.replace(/[^a-zA-Z0-9\s]/g, "").split(/\s+/);
-    const keywords = words.filter(w => !stop.has(w.toLowerCase()) && w.length > 2);
-    return keywords.slice(0, 5).map(w => w.toUpperCase()).join(" · ");
-  }
+function buildPrompt(f, a) {
+  return `An 8-second Pixar-style comedic 3D animation YouTube Short, 9:16 vertical format, hyper-detailed, vibrant colors, exaggerated cartoony character design, expressive rubbery faces, slapstick energy, clean studio lighting.
 
-  const BACKGROUNDS = [
-    "a futuristic neon-lit science lab with glowing blue orbs and floating holograms",
-    "a cozy cartoon living room with warm lamp light and colorful bookshelves",
-    "a vibrant Pixar-style classroom with bright posters and a chalkboard behind him",
-    "a whimsical cartoon nature center with animal illustrations on the walls",
-    "a magical floating space station with Earth glowing through a round porthole window",
-    "a warm cartoon kitchen with oversized appliances and golden lighting",
-    "a lively cartoon museum with glowing exhibit cases in the background",
-    "a playful cartoon treehouse interior with sunlight streaming through round windows",
-  ];
+VOICE: Use the voice named Alnilam for the voiceover. This is fixed and non-negotiable — do not use any other voice.
 
-  function getBg(fact) {
-    const f = fact.toLowerCase();
-    if (f.match(/space|planet|star|universe|moon|nasa/)) return "a magical floating space station with Earth glowing through a round porthole window";
-    if (f.match(/animal|cow|farm|bee|fish|whale|shark|dog|cat|bird/)) return "a whimsical Pixar-style nature center with animal illustrations on the walls and warm earthy tones";
-    if (f.match(/brain|sleep|dream|body|blood|heart|nerve|muscle/)) return "a futuristic neon-lit science lab with glowing anatomical diagrams and blue holograms";
-    if (f.match(/water|ocean|sea|deep|river|lake/)) return "an underwater-themed cartoon room with glowing aquariums lining the walls";
-    if (f.match(/history|ancient|egypt|roman|war|old/)) return "a cartoon museum with ancient artifacts glowing softly in illuminated display cases";
-    if (f.match(/food|honey|eat|stomach|taste|cook/)) return "a whimsical cartoon kitchen with oversized appliances and warm golden lighting";
-    return pick(BACKGROUNDS);
-  }
+AUDIO: Energetic upbeat background music from the very first frame. Over this music, ${pick(VOICEOVER_STYLES)(f)} CRITICAL: voiceover speaks the fact ONCE then stops completely. No repetition, no filler — absolute silence from narrator after delivery.
 
-  // Houdingen per moment
-  const HOOK_FACT_POSES = [
-    (fact) => `looking straight into the camera with enormous wide eyes, pointing forward with both index fingers, and immediately saying in one breath "Did you know that ${fact}?", with energetic hand gestures as he delivers the fact`,
-    (fact) => `spinning to face the camera with eyebrows flying up and both hands raised, and immediately saying in one breath "Did you know that ${fact}?!", totally in his element`,
-    (fact) => `leaning in close to the camera with a sly smirk, tapping his temple knowingly, and immediately saying in one breath "Did you know that ${fact}?", head shaking in disbelief at the camera`,
-    (fact) => `whipping toward the camera with a shocked expression, mouth wide open, and immediately saying in one breath "Did you know that ${fact}?!", gesturing openly with both hands toward the viewer`,
-    (fact) => `jumping slightly with hands framing his face in excitement, and immediately saying in one breath "Did you know that ${fact}?!", speaking with energy and expression directly to the viewer`,
-  ];
+VISUAL PACING: Every scene cut or visual transformation must begin exactly 0.1 to 0.2 seconds BEFORE the corresponding spoken word hits. Visuals always lead the audio by this fraction — the image anticipates the word, never follows it.
 
-  const OUTRO_POSES = [
-    `smiling warmly at the camera, giving a thumbs-up and saying "Follow for more crazy facts!"`,
-    `pointing straight at the viewer with finger-guns and saying "Follow for more — trust me, you need this!"`,
-    `clapping once then pointing at the camera and saying "Hit that follow button for more!"`,
-    `nodding confidently and saying "Follow for more wild facts every day!"`,
-    `doing a fist-pump and saying "More insane facts coming — hit follow!"`,
-  ];
+AUDIO OUTRO PAD: After the voiceover speaks its final word, the animation continues for exactly 1.5 to 2 seconds with no new voiceover. During this pad the background music gradually fades from full volume to complete silence. The video does not cut or end abruptly — it plays out fully through this fade before ending.
 
-  const CTAS = [
-    "Mind blown? Follow for more wild facts every day!",
-    "The world is full of secrets like this — follow for more!",
-    "Your brain just grew! Hit follow for more crazy facts!",
-    "I cannot believe this is real! Follow for more!",
-    "Nature never stops surprising us — follow for more facts!",
-  ];
+VISUALS (0–8s): Full frame, full screen: Pixar-style comedic 3D animation of ${a}, set in ${pick(BACKGROUNDS)}. NO presenter, NO "Did you know", NO intro. ${pick(CAMERA_OPENS)} The animal has an exaggerated cartoon personality — big expressive eyes, rubbery reactions, comic timing. Continuous motion throughout, camera angles shift, reactions build, timing lands. No loops, no repeated frames.
 
-  // Lay-out beschrijvingen
-  function layoutDesc(pose, animDesc) {
-    const layouts = {
-      splitH:  `The frame is split horizontally into two equal halves divided by a clean line. TOP HALF: ${BOY}, ${pose}. BOTTOM HALF: A beautifully detailed Pixar-style 3D animation showing ${animDesc}. Both halves are equally visible, no cropping.`,
-      splitV:  `The frame is split vertically into two equal halves. LEFT HALF: ${BOY}, ${pose}. RIGHT HALF: A beautifully detailed Pixar-style 3D animation showing ${animDesc}. Both halves fully visible.`,
-      bigboy:  `${BOY}, ${pose}, taking up the top 65% of the frame. A wide cinematic strip across the bottom 35% shows a Pixar-style 3D animation of ${animDesc}.`,
-      pip:     `Full frame: ${BOY}, ${pose}. A clearly visible rounded picture-in-picture window in the lower-right corner (about 35% of screen width, fully in frame) shows a Pixar-style 3D animation of ${animDesc}.`,
-      thought: `Full frame: ${BOY}, ${pose}. A large classic cartoon thought bubble floats clearly above his head, fully visible, containing a Pixar-style 3D animation of ${animDesc}.`,
-      overlay: `Full frame: ${BOY}, ${pose}. A wide semi-transparent overlay strip across the bottom third of the screen shows a Pixar-style 3D animation of ${animDesc}.`,
-    };
-    return layouts[layout];
-  }
+Pixar comedic style. Think Finding Nemo meets Looney Tunes. No real-world footage.`;
+}
 
-  function generate() {
-    const fact = document.getElementById("fact").value.trim();
-    const anim = document.getElementById("anim").value.trim();
-    if (!fact) { alert("Vul eerst een feitje in."); return; }
-    if (!anim) { alert("Beschrijf de animatie."); return; }
+function updateUI() {
+  document.getElementById('dbCount').textContent = db.length;
+  document.getElementById('usedCount').textContent = usedIds.length;
+  const pct = db.length > 0 ? Math.round((usedIds.length / db.length) * 100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+}
 
-    const bg          = getBg(fact);
-    const hookFactPose = pick(HOOK_FACT_POSES)(fact);
-    const outroPose   = pick(OUTRO_POSES);
-    const cta         = pick(CTAS);
+function log(msg, type = '') {
+  const el = document.getElementById('buildLog');
+  const line = document.createElement('div');
+  line.className = 'log-line ' + type;
+  line.textContent = msg;
+  el.appendChild(line);
+  el.scrollTop = el.scrollHeight;
+}
 
-    const prompt =
-`A 10-second Pixar-style cinematic 3D animation YouTube Short, 9:16 vertical format, hyper-detailed, vibrant colors, expressive character design, clean studio lighting.
+async function buildDatabase() {
+  if (isBuilding) return;
+  isBuilding = true;
+  document.getElementById('buildBtn').disabled = true;
+  document.getElementById('buildSection').style.display = 'block';
+  document.getElementById('buildLog').innerHTML = '';
 
-The video plays as one continuous scene in two beats:
+  const existingSample = db.slice(-30).map(x => x.f);
+  const existingAnimals = [...new Set(db.map(x => x.animal || '').filter(Boolean))].slice(-80);
+  
+  const excludeText = existingSample.length > 0
+    ? `\n\nDO NOT repeat or closely resemble these existing facts:\n${existingSample.map(f => `- ${f}`).join('\n')}`
+    : '';
+  const excludeAnimals = existingAnimals.length > 0
+    ? `\n\nDO NOT use these animals (already in database): ${existingAnimals.join(', ')}`
+    : '';
 
-BEAT 1 (0–7s) — THE HOOK & THE FACT, IN ONE BREATH:
-${layoutDesc(hookFactPose, anim)}
-Same setting: ${bg}. From the very first frame the boy is already mid-energy, ${hookFactPose}. There is NO pause, NO setup shot and NO separate intro — the question "Did you know that...?" and the fact flow as one single, uninterrupted spoken sentence starting immediately at 0s. For the first 2 seconds, the frame is full-screen on the boy only, no animation visible yet. At around the 2-second mark, the animation panel/area appears and starts playing, continuing alongside him for the rest of the beat — it is its own fun visual, not something the boy is reacting to or pointing at. On-screen animated text bounces into frame in bold, punchy cartoon letters as he starts talking: "DID YOU KNOW? 🤯" small and unobtrusive in a corner, not blocking him or the animation.
+  document.getElementById('buildStatus').textContent = 'API aanroepen voor 50 nieuwe feitjes...';
+  log('Bezig met ophalen van 50 nieuwe unieke feitjes...');
 
-BEAT 2 (7–10s) — THE OUTRO:
-Full frame: ${BOY}, inside ${bg}, ${outroPose}.
-On-screen animated text bounces into frame in bold cartoon letters: "FOLLOW"
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 8000,
+        messages: [{
+          role: 'user',
+          content: `Generate exactly 50 unique, surprising animal facts for TikTok/YouTube Shorts videos.
 
-Consistent character throughout: ${BOY}. Same background across both beats. Smooth transition between beats. Pixar art style, no real-world footage, fully stylized 3D animation throughout. No looping, no repeated frames, no stuttering — every second shows continuous forward motion and new action.`;
+Rules:
+- Each fact about a DIFFERENT animal — maximum 1 fact per animal
+- Wildly varied: insects, deep sea, birds, mammals, reptiles, prehistoric, microscopic, amphibians, arachnids, molluscs, crustaceans, fish, worms, fungi-related animals — spread across ALL categories
+- Each fact must be true and verifiable
+- Visually dramatic, bizarre, or funny enough to stop a scroller
+- One sentence, max 20 words
+- Obscure and unexpected — NOT the most famous fact about that animal
+- No generic facts about speed, strength, size, loyalty, or memory${excludeAnimals}${excludeText}
 
-    document.getElementById("promptBox").textContent = prompt;
-    const copyBtn = document.getElementById("copyBtn");
-    copyBtn.textContent = "Kopieer naar klembord";
-    copyBtn.classList.remove("copied");
+For each fact also write a SHORT (max 20 words) FUNNY Pixar-style animation description. Think slapstick, cartoon physics, exaggerated reactions, visual punchlines.
 
-    const outEl = document.getElementById("out");
-    outEl.classList.add("visible");
-    outEl.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
-
-  function copyIt() {
-    navigator.clipboard.writeText(document.getElementById("promptBox").textContent).then(() => {
-      const btn = document.getElementById("copyBtn");
-      btn.textContent = "Gekopieerd! ✓";
-      btn.classList.add("copied");
-      setTimeout(() => { btn.textContent = "Kopieer naar klembord"; btn.classList.remove("copied"); }, 2500);
+Respond ONLY with a valid JSON array, no other text:
+[{"f":"fact","a":"animation","animal":"animal name"},...]`
+        }]
+      })
     });
+
+    const data = await res.json();
+    const text = data.content[0].text.trim();
+    const start = text.indexOf('[');
+    const end = text.lastIndexOf(']') + 1;
+    const parsed = JSON.parse(text.slice(start, end));
+
+    let added = 0;
+    const existingFacts = new Set(db.map(x => x.f.toLowerCase()));
+    const existingAnimalsSet = new Set(db.map(x => (x.animal || '').toLowerCase()));
+
+    for (const item of parsed) {
+      if (!item.f || !item.a) continue;
+      if (existingFacts.has(item.f.toLowerCase())) continue;
+      if (item.animal && existingAnimalsSet.has(item.animal.toLowerCase())) continue;
+      db.push({ f: item.f, a: item.a, animal: item.animal || '' });
+      existingFacts.add(item.f.toLowerCase());
+      if (item.animal) existingAnimalsSet.add(item.animal.toLowerCase());
+      added++;
+    }
+
+    localStorage.setItem('factdb', JSON.stringify(db));
+    log(`✓ ${added} nieuwe feitjes toegevoegd. Totaal: ${db.length}`, 'ok');
+    updateUI();
+  } catch(e) {
+    log(`✗ Fout: ${e.message}`, 'err');
   }
+
+  isBuilding = false;
+  document.getElementById('buildBtn').disabled = false;
+  document.getElementById('buildStatus').textContent = 'Klaar!';
+}
+
+function getRandomFact() {
+  const available = db.filter((_,i) => !usedIds.includes(i));
+  if (available.length === 0) {
+    usedIds = [];
+    sessionStorage.setItem('usedIds', '[]');
+    return db[Math.floor(Math.random() * db.length)];
+  }
+  const availableIndexes = db.map((_,i) => i).filter(i => !usedIds.includes(i));
+  const idx = availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
+  usedIds.push(idx);
+  sessionStorage.setItem('usedIds', JSON.stringify(usedIds));
+  return db[idx];
+}
+
+function renderResult(item, n) {
+  const prompt = buildPrompt(item.f, item.a);
+  return `<div class="card"><div class="card-label">📌 Feitje${n > 1 ? ' ' + n : ''}</div><div class="fact-text">${item.f}</div></div>
+<div class="card"><div class="card-label">🎨 Animatie${n > 1 ? ' ' + n : ''}</div><div class="anim-text">${item.a}</div></div>
+<div class="card"><div class="card-label">📋 Google Flow Prompt${n > 1 ? ' ' + n : ''}</div><div class="prompt-box" id="pb${n}">${prompt}</div>
+<button class="copy-btn" id="cb${n}" onclick="copyPrompt(${n})">Kopieer prompt${n > 1 ? ' ' + n : ''}</button></div>`;
+}
+
+function generate(count) {
+  if (db.length === 0) {
+    alert('Database is leeg! Klik eerst op "+ Voeg 50 feitjes toe" om te beginnen.');
+    return;
+  }
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('results').innerHTML = '';
+  setTimeout(() => {
+    let html = '';
+    for (let i = 1; i <= count; i++) {
+      const item = getRandomFact();
+      sessionHistory.unshift({ f: item.f, a: item.a, time: new Date().toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' }) });
+      if (sessionHistory.length > 15) sessionHistory.pop();
+      html += renderResult(item, i);
+    }
+    document.getElementById('results').innerHTML = html;
+    document.getElementById('loading').style.display = 'none';
+    updateUI();
+    renderHistory();
+  }, 150);
+}
+
+function copyPrompt(n) {
+  navigator.clipboard.writeText(document.getElementById('pb' + n).textContent).then(() => {
+    const btn = document.getElementById('cb' + n);
+    btn.textContent = 'Gekopieerd! ✓';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Kopieer prompt' + (n > 1 ? ' ' + n : ''); btn.classList.remove('copied'); }, 2500);
+  });
+}
+
+function renderHistory() {
+  if (!sessionHistory.length) return;
+  document.getElementById('history').style.display = 'block';
+  document.getElementById('historyList').innerHTML = sessionHistory.map((h, i) =>
+    `<div class="history-item" onclick="loadHistory(${i})"><div class="history-fact">${h.f}</div><div class="history-meta">${h.time} · klik om te laden</div></div>`
+  ).join('');
+}
+
+function loadHistory(i) {
+  const h = sessionHistory[i];
+  document.getElementById('results').innerHTML = renderResult({ f: h.f, a: h.a }, 1);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+updateUI();
 </script>
 </body>
 </html>
