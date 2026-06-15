@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YouTube Shorts Script Maker</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f0f1a;
+      color: #f0f0f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+    h1 {
+      font-size: 2rem;
+      background: linear-gradient(135deg, #ff6b35, #f7c948, #4ecdc4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .subtitle { color: #888; margin-bottom: 36px; font-size: 0.95rem; text-align: center; }
+
+    .card {
+      background: #1a1a2e;
+      border: 1px solid #2a2a4a;
+      border-radius: 16px;
+      padding: 32px;
+      width: 100%;
+      max-width: 700px;
+      margin-bottom: 24px;
+    }
+    label {
+      display: block;
+      font-size: 0.78rem;
+      color: #aaa;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+    textarea {
+      width: 100%;
+      background: #0f0f1a;
+      border: 1px solid #333;
+      border-radius: 10px;
+      color: #f0f0f0;
+      font-size: 1rem;
+      padding: 14px 16px;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.2s;
+      font-family: inherit;
+      min-height: 72px;
+    }
+    textarea:focus { border-color: #ff6b35; }
+    .field { margin-top: 22px; }
+
+    /* Layout grid */
+    .layout-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .layout-btn {
+      background: #0f0f1a;
+      border: 2px solid #2a2a4a;
+      border-radius: 12px;
+      padding: 14px 8px 11px;
+      cursor: pointer;
+      text-align: center;
+      transition: border-color 0.15s, background 0.15s;
+      user-select: none;
+    }
+    .layout-btn:hover { border-color: #ff6b35; background: #1a1020; }
+    .layout-btn.selected { border-color: #ff6b35; background: #1f1020; box-shadow: 0 0 0 1px #ff6b3544; }
+
+    .lp {
+      width: 44px; height: 62px;
+      margin: 0 auto 9px;
+      border-radius: 5px;
+      overflow: hidden;
+      border: 1px solid #444;
+      display: flex;
+    }
+    .b { background: #ff6b35; }
+    .a { background: #4ecdc4; }
+
+    .layout-label { font-size: 0.78rem; font-weight: 700; color: #f0f0f0; margin-bottom: 2px; }
+    .layout-desc  { font-size: 0.67rem; color: #666; line-height: 1.3; }
+
+    .generate-btn {
+      margin-top: 26px;
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #ff6b35, #f7c948);
+      border: none;
+      border-radius: 12px;
+      color: #0f0f1a;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    .generate-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+    /* Output */
+    .output-card {
+      background: #1a1a2e;
+      border: 1px solid #2a2a4a;
+      border-radius: 16px;
+      padding: 28px;
+      width: 100%;
+      max-width: 700px;
+      display: none;
+    }
+    .output-card.visible { display: block; }
+    .out-label {
+      font-size: 0.75rem;
+      color: #ff6b35;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 14px;
+      font-weight: 700;
+    }
+    .prompt-box {
+      background: #0f0f1a;
+      border: 1px solid #2a2a4a;
+      border-radius: 10px;
+      padding: 18px;
+      font-size: 0.92rem;
+      line-height: 1.75;
+      color: #ddd;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .copy-btn {
+      margin-top: 14px;
+      width: 100%;
+      padding: 13px;
+      background: linear-gradient(135deg, #ff6b35, #f7c948);
+      border: none;
+      border-radius: 10px;
+      color: #0f0f1a;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .copy-btn:hover { opacity: 0.9; }
+    .copy-btn.copied { background: #1a4a1a; color: #4ecdc4; }
+  </style>
+</head>
+<body>
+
+<h1>YouTube Shorts Script Maker</h1>
+<p class="subtitle">Één prompt · Google Flow · Pixar stijl</p>
+
+<div class="card">
+
+  <label>Het feitje</label>
+  <textarea id="fact" placeholder="Bijv: Cows can walk up a flight of stairs, but they cannot walk back down because their knees do not bend in that direction"></textarea>
+
+  <div class="field">
+    <label>De animatie (bedenk zelf een leuk onrealistisch filmpje)</label>
+    <textarea id="anim" placeholder="Bijv: a cartoon cow in a graduation cap confidently strutting up stairs, then freezing at the top with a panicked face realising it can't come back down"></textarea>
+  </div>
+
+  <div class="field">
+    <label>Lay-out</label>
+    <div class="layout-grid">
+
+      <div class="layout-btn selected" data-value="splitH" onclick="sel(this)">
+        <div class="lp" style="flex-direction:column">
+          <div class="b" style="flex:1"></div>
+          <div class="a" style="flex:1"></div>
+        </div>
+        <div class="layout-label">Boven / Onder</div>
+        <div class="layout-desc">Mannetje boven, clip onder</div>
+      </div>
+
+      <div class="layout-btn" data-value="splitV" onclick="sel(this)">
+        <div class="lp" style="flex-direction:row">
+          <div class="b" style="flex:1"></div>
+          <div class="a" style="flex:1"></div>
+        </div>
+        <div class="layout-label">Links / Rechts</div>
+        <div class="layout-desc">Mannetje links, clip rechts</div>
+      </div>
+
+      <div class="layout-btn" data-value="bigboy" onclick="sel(this)">
+        <div class="lp" style="flex-direction:column">
+          <div class="b" style="flex:3"></div>
+          <div class="a" style="flex:1; border-top:1px solid #555"></div>
+        </div>
+        <div class="layout-label">Groot / Smal</div>
+        <div class="layout-desc">Groot mannetje, smalle strip clip</div>
+      </div>
+
+      <div class="layout-btn" data-value="pip" onclick="sel(this)">
+        <div class="lp" style="background:#ff6b35;position:relative;">
+          <div style="position:absolute;bottom:5px;right:5px;width:40%;height:36%;background:#4ecdc4;border-radius:3px;border:1px solid #fff3"></div>
+        </div>
+        <div class="layout-label">Picture-in-Picture</div>
+        <div class="layout-desc">Clip als inset rechtsonder</div>
+      </div>
+
+      <div class="layout-btn" data-value="thought" onclick="sel(this)">
+        <div class="lp" style="background:#ff6b35;position:relative;">
+          <div style="position:absolute;top:7px;right:6px;width:40%;height:36%;background:#4ecdc4;border-radius:50%;border:2px solid #fff3"></div>
+        </div>
+        <div class="layout-label">Gedachtenwolk</div>
+        <div class="layout-desc">Clip in bubble boven hem</div>
+      </div>
+
+      <div class="layout-btn" data-value="overlay" onclick="sel(this)">
+        <div class="lp" style="background:#ff6b35;position:relative;">
+          <div style="position:absolute;bottom:0;left:0;right:0;height:36%;background:rgba(78,205,196,0.65);border-radius:0 0 3px 3px"></div>
+        </div>
+        <div class="layout-label">Overlay Strip</div>
+        <div class="layout-desc">Clip als brede strip onderin</div>
+      </div>
+
+    </div>
+  </div>
+
+  <button class="generate-btn" onclick="generate()">Genereer Prompt</button>
+</div>
+
+<div class="output-card" id="out">
+  <div class="out-label">Google Flow Prompt</div>
+  <div class="prompt-box" id="promptBox"></div>
+  <button class="copy-btn" id="copyBtn" onclick="copyIt()">Kopieer naar klembord</button>
+</div>
+
+<script>
+  const BOY = `a charismatic 26-year-old animated boy with messy brown hair, big green eyes, light freckles, and a vibrant orange hoodie`;
+
+  let layout = "splitH";
+  function sel(el) {
+    document.querySelectorAll(".layout-btn").forEach(b => b.classList.remove("selected"));
+    el.classList.add("selected");
+    layout = el.dataset.value;
+  }
+
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+  function factKeywords(fact) {
+    // Strip common filler words and return the most impactful words in caps
+    const stop = new Set(["a","an","the","and","or","but","in","on","at","to","of","for","is","are","was","were","it","its","that","this","they","can","cannot","not","do","does","with","from","by","as","be","been","have","has","their","which","who","how","what","when","because","so","than","more","most","only","also","just","up","down","into","out","about","after","before","very","all","both"]);
+    const words = fact.replace(/[^a-zA-Z0-9\s]/g, "").split(/\s+/);
+    const keywords = words.filter(w => !stop.has(w.toLowerCase()) && w.length > 2);
+    return keywords.slice(0, 5).map(w => w.toUpperCase()).join(" · ");
+  }
+
+  const BACKGROUNDS = [
+    "a futuristic neon-lit science lab with glowing blue orbs and floating holograms",
+    "a cozy cartoon living room with warm lamp light and colorful bookshelves",
+    "a vibrant Pixar-style classroom with bright posters and a chalkboard behind him",
+    "a whimsical cartoon nature center with animal illustrations on the walls",
+    "a magical floating space station with Earth glowing through a round porthole window",
+    "a warm cartoon kitchen with oversized appliances and golden lighting",
+    "a lively cartoon museum with glowing exhibit cases in the background",
+    "a playful cartoon treehouse interior with sunlight streaming through round windows",
+  ];
+
+  function getBg(fact) {
+    const f = fact.toLowerCase();
+    if (f.match(/space|planet|star|universe|moon|nasa/)) return "a magical floating space station with Earth glowing through a round porthole window";
+    if (f.match(/animal|cow|farm|bee|fish|whale|shark|dog|cat|bird/)) return "a whimsical Pixar-style nature center with animal illustrations on the walls and warm earthy tones";
+    if (f.match(/brain|sleep|dream|body|blood|heart|nerve|muscle/)) return "a futuristic neon-lit science lab with glowing anatomical diagrams and blue holograms";
+    if (f.match(/water|ocean|sea|deep|river|lake/)) return "an underwater-themed cartoon room with glowing aquariums lining the walls";
+    if (f.match(/history|ancient|egypt|roman|war|old/)) return "a cartoon museum with ancient artifacts glowing softly in illuminated display cases";
+    if (f.match(/food|honey|eat|stomach|taste|cook/)) return "a whimsical cartoon kitchen with oversized appliances and warm golden lighting";
+    return pick(BACKGROUNDS);
+  }
+
+  // Houdingen per moment
+  const HOOK_FACT_POSES = [
+    (fact) => `looking straight into the camera with enormous wide eyes, pointing forward with both index fingers, and immediately saying in one breath "Did you know that ${fact}?", with energetic hand gestures as he delivers the fact`,
+    (fact) => `spinning to face the camera with eyebrows flying up and both hands raised, and immediately saying in one breath "Did you know that ${fact}?!", totally in his element`,
+    (fact) => `leaning in close to the camera with a sly smirk, tapping his temple knowingly, and immediately saying in one breath "Did you know that ${fact}?", head shaking in disbelief at the camera`,
+    (fact) => `whipping toward the camera with a shocked expression, mouth wide open, and immediately saying in one breath "Did you know that ${fact}?!", gesturing openly with both hands toward the viewer`,
+    (fact) => `jumping slightly with hands framing his face in excitement, and immediately saying in one breath "Did you know that ${fact}?!", speaking with energy and expression directly to the viewer`,
+  ];
+
+  const OUTRO_POSES = [
+    `smiling warmly at the camera, giving a thumbs-up and saying "Follow for more crazy facts!"`,
+    `pointing straight at the viewer with finger-guns and saying "Follow for more — trust me, you need this!"`,
+    `clapping once then pointing at the camera and saying "Hit that follow button for more!"`,
+    `nodding confidently and saying "Follow for more wild facts every day!"`,
+    `doing a fist-pump and saying "More insane facts coming — hit follow!"`,
+  ];
+
+  const CTAS = [
+    "Mind blown? Follow for more wild facts every day!",
+    "The world is full of secrets like this — follow for more!",
+    "Your brain just grew! Hit follow for more crazy facts!",
+    "I cannot believe this is real! Follow for more!",
+    "Nature never stops surprising us — follow for more facts!",
+  ];
+
+  // Lay-out beschrijvingen
+  function layoutDesc(pose, animDesc) {
+    const layouts = {
+      splitH:  `The frame is split horizontally into two equal halves divided by a clean line. TOP HALF: ${BOY}, ${pose}. BOTTOM HALF: A beautifully detailed Pixar-style 3D animation showing ${animDesc}. Both halves are equally visible, no cropping.`,
+      splitV:  `The frame is split vertically into two equal halves. LEFT HALF: ${BOY}, ${pose}. RIGHT HALF: A beautifully detailed Pixar-style 3D animation showing ${animDesc}. Both halves fully visible.`,
+      bigboy:  `${BOY}, ${pose}, taking up the top 65% of the frame. A wide cinematic strip across the bottom 35% shows a Pixar-style 3D animation of ${animDesc}.`,
+      pip:     `Full frame: ${BOY}, ${pose}. A clearly visible rounded picture-in-picture window in the lower-right corner (about 35% of screen width, fully in frame) shows a Pixar-style 3D animation of ${animDesc}.`,
+      thought: `Full frame: ${BOY}, ${pose}. A large classic cartoon thought bubble floats clearly above his head, fully visible, containing a Pixar-style 3D animation of ${animDesc}.`,
+      overlay: `Full frame: ${BOY}, ${pose}. A wide semi-transparent overlay strip across the bottom third of the screen shows a Pixar-style 3D animation of ${animDesc}.`,
+    };
+    return layouts[layout];
+  }
+
+  function generate() {
+    const fact = document.getElementById("fact").value.trim();
+    const anim = document.getElementById("anim").value.trim();
+    if (!fact) { alert("Vul eerst een feitje in."); return; }
+    if (!anim) { alert("Beschrijf de animatie."); return; }
+
+    const bg          = getBg(fact);
+    const hookFactPose = pick(HOOK_FACT_POSES)(fact);
+    const outroPose   = pick(OUTRO_POSES);
+    const cta         = pick(CTAS);
+
+    const prompt =
+`A 10-second Pixar-style cinematic 3D animation YouTube Short, 9:16 vertical format, hyper-detailed, vibrant colors, expressive character design, clean studio lighting.
+
+The video plays as one continuous scene in two beats:
+
+BEAT 1 (0–7s) — THE HOOK & THE FACT, IN ONE BREATH:
+${layoutDesc(hookFactPose, anim)}
+Same setting: ${bg}. From the very first frame the boy is already mid-energy, ${hookFactPose}. There is NO pause, NO setup shot and NO separate intro — the question "Did you know that...?" and the fact flow as one single, uninterrupted spoken sentence starting immediately at 0s. For the first 2 seconds, the frame is full-screen on the boy only, no animation visible yet. At around the 2-second mark, the animation panel/area appears and starts playing, continuing alongside him for the rest of the beat — it is its own fun visual, not something the boy is reacting to or pointing at. On-screen animated text bounces into frame in bold, punchy cartoon letters as he starts talking: "DID YOU KNOW? 🤯" small and unobtrusive in a corner, not blocking him or the animation.
+
+BEAT 2 (7–10s) — THE OUTRO:
+Full frame: ${BOY}, inside ${bg}, ${outroPose}.
+On-screen animated text bounces into frame in bold cartoon letters: "FOLLOW"
+
+Consistent character throughout: ${BOY}. Same background across both beats. Smooth transition between beats. Pixar art style, no real-world footage, fully stylized 3D animation throughout. No looping, no repeated frames, no stuttering — every second shows continuous forward motion and new action.`;
+
+    document.getElementById("promptBox").textContent = prompt;
+    const copyBtn = document.getElementById("copyBtn");
+    copyBtn.textContent = "Kopieer naar klembord";
+    copyBtn.classList.remove("copied");
+
+    const outEl = document.getElementById("out");
+    outEl.classList.add("visible");
+    outEl.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function copyIt() {
+    navigator.clipboard.writeText(document.getElementById("promptBox").textContent).then(() => {
+      const btn = document.getElementById("copyBtn");
+      btn.textContent = "Gekopieerd! ✓";
+      btn.classList.add("copied");
+      setTimeout(() => { btn.textContent = "Kopieer naar klembord"; btn.classList.remove("copied"); }, 2500);
+    });
+  }
+</script>
+</body>
+</html>
