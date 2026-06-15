@@ -170,11 +170,12 @@ async function buildDatabase() {
   log('Bezig met ophalen van 50 nieuwe unieke feitjes...');
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    // Hier maakt hij nu verbinding met jouw eigen veilige proxy op Vercel
+    const res = await fetch('https://flow-prompt-proxy-stannie11.vercel.app/api/facts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
+        model: 'claude-3-5-sonnet-20241022', // Geüpdatet naar de juiste modelnaam
         max_tokens: 8000,
         messages: [{
           role: 'user',
